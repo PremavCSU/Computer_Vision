@@ -21,6 +21,9 @@ def image_display(image):
     cv2.waitKey(0)
     cv2.destroyAllWindows() 
 
+def image_save(image, output_path):
+    cv2.imwrite(output_path, image)
+
 def extract_channels(image):
   
     blue_channel = image[:, :, 0]
@@ -75,6 +78,8 @@ def main():
 
     #display in matplatlib 
     plt.show()
+    # Step 4: Save the images
+    image_save(original_rgb, "Image/original_rgb.jpg")
 
 if __name__ == "__main__":
     main()
