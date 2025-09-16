@@ -29,12 +29,8 @@ def save_image(image, output_path):
 def main():
     image_path = "Image/Rose.jpg"
     output_path = "Image/Rose_binary.jpg"
-    
-    os.makedirs('Image', exist_ok=True)
-    
+        
     original_image = load_image(image_path)
-    if original_image is None:
-        return
     
     binary_img = binary_image(original_image)
     display_image(binary_img, "Binary Image")
