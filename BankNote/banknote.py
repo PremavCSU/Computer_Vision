@@ -4,13 +4,16 @@ import numpy as np
 
 def load_image(image_path):
     image = cv2.imread(image_path)
+    if image is None:
+        print(f"Error: Could not load image from {image_path}")
+        return None
     return image
 
 
-def show_image(transulate, rotated, scaled, perspective_corrected, manual_translate):
+def show_image(translated, rotated, scaled, perspective_corrected, manual_translated):
     # Show translated image
     cv2.namedWindow("Translated Image", cv2.WINDOW_NORMAL)
-    cv2.imshow("Translated Image", transulate)
+    cv2.imshow("Translated Image", translated)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     
@@ -34,7 +37,7 @@ def show_image(transulate, rotated, scaled, perspective_corrected, manual_transl
 
     #show manual translate image
     cv2.namedWindow("Manual Translate Image", cv2.WINDOW_NORMAL)
-    cv2.imshow("Manual Translate Image", manual_translate)
+    cv2.imshow("Manual Translate Image", manual_translated)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -74,22 +77,36 @@ def inspect_pixel(image):
     #sample_matrix = image[0:5, 0:5]  # Top-left 5x5 block
     #print("Top-left 5x5 pixel matrix (BGR values):\n", sample_matrix)
 
+def save_images(translated, rotated, scaled, perspective_corrected, manual_translated):
+    os.makedirs('Image/Output', exist_ok=True)
+    cv2.imwrite('Image/Output/translated.jpg', translated)
+    cv2.imwrite('Image/Output/rotated.jpg', rotated)
+    cv2.imwrite('Image/Output/scaled.jpg', scaled)
+    cv2.imwrite('Image/Output/perspective_corrected.jpg', perspective_corrected)
+    cv2.imwrite('Image/Output/manual_translated.jpg', manual_translated)
+    print("All transformed images saved to Image/Output/")
+
 def main():
     image_path = "Image/Banknotes.jpg"
-
+    
     image = load_image(image_path)
+    if image is None:
+        return
+    
     inspect_pixel(image)
 
-    transulated = translate_image(image,50,30)
+    translated = translate_image(image, 50, 30)
     rotated = rotate_image(image, 10, 1.0)
     scaled = scale_image(image, 1.5, 1.5)
 
-        # Step 4: Apply perspective transformation
-    src_pts = np.array([[100, 100], [400, 100], [100, 400], [400, 400]], dtype=np.float32)  # Example source corners
-    dst_pts = np.array([[120, 80], [380, 120], [80, 420], [420, 380]], dtype=np.float32)    # Desired mapped corners
+    # Apply perspective transformation
+    src_pts = np.array([[100, 100], [400, 100], [100, 400], [400, 400]], dtype=np.float32)
+    dst_pts = np.array([[120, 80], [380, 120], [80, 420], [420, 380]], dtype=np.float32)
     perspective_corrected = perspective_transform(scaled, src_pts, dst_pts)
     manual_translated = manual_translate(image, 50, 30)
-    show_image(transulated, rotated, scaled, perspective_corrected, manual_translated)
+    
+    save_images(translated, rotated, scaled, perspective_corrected, manual_translated)
+    show_image(translated, rotated, scaled, perspective_corrected, manual_translated)
    
 
 if __name__ == "__main__":
